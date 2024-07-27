@@ -4,37 +4,64 @@
 #include "wet2util.h"
 #include "dynamic_array.h"
 
-template<typename T>
+template<typename T, typename S>
 class UpTree {
     public:
-    struct Group {
-        int id;
+    class Union {
+        Union* root;
+        S id;
+        int size;
+        Union(S unionId) : root(nullptr), id(unionId), size(0) {}
+        bool isUnion() const {
+            return root == nullptr;
+        }
+
+        void joinIn(Union* unionFather) {
+            id.joinIn(unionFather);
+            root = unionFather;
+        }
     }
     class Node {
-        Node* m_root;
-        Group* m_group;
-        T* m_key;
-        int m_size;
-        Node(T* key) : m_root(nullptr), m_group(nullptr), m_key(key) {}
+        Union* root;
+        T value;
+        Node(Union* union, const T& val) : root(union), value(val) {}
     };
-    UpTree() : m_size(0), m_groups(0) {}
+    UpTree() : m_size(0) {}
     ~UpTree();
 
-    output_t<T*> makeSet(const T& key);
-    StatusType union2(Node* node1, Node* node2);
-    find()
+    StatusType makeSet(const S& unionId, int hashId);
+    StatusType insertValue(Union* union, const T& value) {
+        if (m_pointers.size() < m_size) {
+            m_pointers.incrementSize(1); // maybe add a const
+        }
+        Node node(union, value);
+        return m_pointers.set(m_size, node);
+    }
+    StatusType union2(Union* union1, Union* union2);
+    Union* find(int valueId);
 
     private:
-    int m_size;
-    int m_groups;
     Array<Node> m_pointers;
+    int m_size;
 };
 
 #endif // UP_TREE_H_
 
-template <typename T>
-inline output_t<T *> UpTree<T>::makeSet(const T &key)
+template <typename T, typename S>
+inline StatusType UpTree<T, S>::makeSet(const S& unionId, int hashId)
 {
-    
-    return output_t<T *>();
+    Union newUnion(unionId);
+    m_hash[hashId] = newUnion;
+    return StatusType::SUCCESS;
+}
+
+template <typename T, typename S>
+inline StatusType UpTree<T, S>::union2(Union* union1, Union* union2)
+{
+    if (*union1 < *union2) {
+        union1->joinIn(union2);
+    } else {
+        union2->joinIn(union1);
+    }
+    return StatusType::SUCCESS;
 }
