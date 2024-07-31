@@ -11,7 +11,7 @@ class UpTree {
     class Union {
         Union* superUnion;
         S id;
-        Union(S unionId) : superUnion(nullptr), id(unionId), size(0) {}
+        Union(S unionId) : superUnion(nullptr), id(unionId) {}
         bool isUnion() const {
             return superUnion == nullptr;
         }
@@ -31,7 +31,7 @@ class UpTree {
         T value;
         Node(Union* root, const T& val) : root(root), value(val) {}
     };
-    UpTree() : m_size(0) {}
+    UpTree(){}
     ~UpTree() = default;
 
     StatusType makeSet(const S& unionId);
