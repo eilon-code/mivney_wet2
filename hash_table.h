@@ -11,7 +11,7 @@ class HashTable {
     HashTable();
     ~HashTable();
 
-    StatusType insert(int key, T value);
+    StatusType insert(int key, const T& value);
     output_t<T*> get(int key);
     output_t<T*> del(int key);// not necessary
 

@@ -11,13 +11,13 @@ class UpTree {
     class Union {
         Union* superUnion;
         S id;
-        int size;
         Union(S unionId) : superUnion(nullptr), id(unionId), size(0) {}
         bool isUnion() const {
             return superUnion == nullptr;
         }
 
         StatusType joinIn(Union* root) {
+            if (superUnion!=nullptr) return StatusType::FAILURE
             StatusType result = id.joinIn(root->id);
             if (result != StatusType::SUCCESS) {
                 return result;
@@ -34,10 +34,11 @@ class UpTree {
     UpTree() : m_size(0) {}
     ~UpTree() = default;
 
-    StatusType makeSet(const S& unionId, int hashId);
+    StatusType makeSet(const S& unionId);
     StatusType insertValue(int unionId, const T& value);
     StatusType union2(Union* union1, Union* union2);
-    output_t<Union*> find(int valueId);
+    output_t<S*> findUnionOf(int valueId);
+    output_t<T*> fetch(int valueId);
 
     private:
     HashTable<Union> m_unionHash;
@@ -47,11 +48,11 @@ class UpTree {
 #endif // UP_TREE_H_
 
 template <typename T, typename S>
-inline StatusType UpTree<T, S>::makeSet(const S& unionId, int hashId)
+inline StatusType UpTree<T, S>::makeSet(const S& unionId)
 {
     try {
         Union newUnion(unionId);
-        return m_unionHash.insert(hashId, newUnion);
+        return m_unionHash.insert(unionId.getId(), newUnion);
     } catch(...) {
         return StatusType::ALLOCATION_ERROR
     }
@@ -88,7 +89,7 @@ inline StatusType UpTree<T, S>::union2(Union* union1, Union* union2)
 }
 
 template <typename T, typename S>
-inline output_t<typename UpTree<T, S>::Union*> UpTree<T, S>::find(int valueId)
+inline output_t<S*> UpTree<T, S>::findUnionOf(int valueId)
 {
     output_t<Node*> search = m_nodeHash.get(valueId);
     if (search.status() != StatusType::SUCCESS) {
@@ -99,11 +100,22 @@ inline output_t<typename UpTree<T, S>::Union*> UpTree<T, S>::find(int valueId)
     while (!root->superUnion) {
         root = root->superUnion
     }
-    Union* subUnion = node->root;
+    Union* subUnion = node->root;// from now on, the hight optimization for all unions in the way up
     while (subUnion->superUnion != root) {
         Union* temp = subUnion->superUnion;
         subUnion->superUnion = root;
         subUnion = temp;
     }
-    return root;
+    return &(root->id);
+}
+
+template <typename T, typename S>
+inline output_t<T*> UpTree<T, S>::fetch(int valueId)
+{
+    output_t<Node*> search = m_nodeHash.get(valueId);
+    if (search.status() != StatusType::SUCCESS) {
+        return search.status();
+    }
+    Node* node = search.ans();
+    return &(node->value);
 }
