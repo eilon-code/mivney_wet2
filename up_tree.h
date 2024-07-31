@@ -32,7 +32,7 @@ class UpTree {
         Node(Union* root, const T& val) : root(root), value(val) {}
     };
     UpTree() : m_size(0) {}
-    ~UpTree();
+    ~UpTree() = default;
 
     StatusType makeSet(const S& unionId, int hashId);
     StatusType insertValue(int unionId, const T& value);
