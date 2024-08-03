@@ -95,7 +95,7 @@ inline StatusType UpTree<T, S>::union2Set(int set1Id, int set2Id)
     Set* set1 = search1.ans();
     Set* set2 = search2.ans();
 
-    Set* superset;
+    Set* superSet;
     Set* subSet;
 
     if (set1->id < set2->id) {
