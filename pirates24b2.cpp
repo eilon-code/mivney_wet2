@@ -14,7 +14,7 @@ oceans_t::~oceans_t()
 StatusType oceans_t::add_fleet(int fleetId)
 {
 	if (fleetId <= 0) return StatusType::INVALID_INPUT;
-	Fleet fleet = Fleet(fleetId);
+	Fleet fleet(fleetId);
 	return m_unionFind.makeSet(fleet);
 }
 

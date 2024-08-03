@@ -70,7 +70,7 @@ inline StatusType UpTree<T, S>::makeSet(const S& SetId)
 template <typename T, typename S>
 inline StatusType UpTree<T, S>::insertValue(int setId, const T &value)
 {
-    output_t<Set*> search = m_setHash.get(setId);
+    output_t<Set*> search = findSet(setId);
     if (search.status() != StatusType::SUCCESS) {
         return search.status();
     }
@@ -88,8 +88,8 @@ inline StatusType UpTree<T, S>::insertValue(int setId, const T &value)
 template <typename T, typename S>
 inline StatusType UpTree<T, S>::union2Set(int set1Id, int set2Id)
 {
-    output_t<Set*> search1 = m_setHash.get(set1Id);
-    output_t<Set*> search2 = m_setHash.get(set2Id);
+    output_t<Set*> search1 = findSet(set1Id);
+    output_t<Set*> search2 = findSet(set2Id);
     if (search1.status() != StatusType::SUCCESS) return search1.status();
     if (search2.status() != StatusType::SUCCESS) return search2.status();
     Set* set1 = search1.ans();
