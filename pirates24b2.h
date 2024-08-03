@@ -16,12 +16,13 @@
 #define PIRATESA2_H_
 
 #include "wet2util.h"
+#include "data_structures/up_tree.h"
+#include "game/pirate.h"
+#include "game/fleet.h"
 
 class oceans_t {
 private:
-	//
-	// Here you may add anything you want
-	//
+	UpTree<Pirate, Fleet> m_unionFind;
 	
 public:
 	// <DO-NOT-MODIFY> {

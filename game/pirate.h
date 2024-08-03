@@ -1,3 +1,6 @@
+#ifndef PIRATE_H_
+#define PIRATE_H_
+
 #include "fleet.h"
 
 class Pirate {
@@ -30,3 +33,5 @@ class Pirate {
     int m_coins;
     int m_rank;
 };
+
+#endif // PIRATE_H_
