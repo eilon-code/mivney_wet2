@@ -89,7 +89,7 @@ StatusType oceans_t::pirate_argument(int pirateId1, int pirateId2)
 
 int getPirateRank(Pirate* pirate, UpTree<Pirate, Fleet>::Set* set) {
 	int result = pirate->getRank();
-	while (set != nullptr) {
+	while (!set->isRoot()) {
 		result += set->id.rankOffset();
 		set = set->superSet;
 	}

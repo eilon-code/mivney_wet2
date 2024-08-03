@@ -10,10 +10,6 @@ class UpTree {
     public:
     class Set {
         Set(const S& setId) : superSet(nullptr), id(setId) {}
-        bool isRoot() const {
-            return superSet == nullptr;
-        }
-
         StatusType joinIn(Set* root) {
             if (superSet!=nullptr) return StatusType::FAILURE
             StatusType result = id.joinIn(root->id);
@@ -29,6 +25,10 @@ class UpTree {
         }
 
         public:
+        bool isRoot() const {
+            return superSet == nullptr;
+        }
+        
         Set* superSet;
         S id;
     }
@@ -115,7 +115,9 @@ inline output_t<typename UpTree<T, S>::Set*> UpTree<T, S>::findSet(int setId)
     if (search.status() != StatusType::SUCCESS) {
         return search.status();
     }
-    return search.ans();
+    Set* set = search.ans();
+    if (!set->isRoot()) return StatusType::FAILURE;
+    return set;
 }
 
 template <typename T, typename S>
@@ -127,8 +129,8 @@ inline output_t<typename UpTree<T, S>::Set*> UpTree<T, S>::findSetOf(int valueId
     }
     Node* node = search.ans();
     Set* root = node->root;
-    while (root->superSet != nullptr) {
-        root = root->superSet
+    while (!root->isRoot()) {
+        root = root->superSet;
     }
     Set* subSet = node->root;// from now on, the hight optimization for all Sets in the way up
     while (subSet->superSet != root) {
