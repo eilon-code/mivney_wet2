@@ -70,6 +70,8 @@ inline StatusType UpTree<T, S>::insertValue(int unionId, const T &value)
 
     Union* root = search.ans();
     Node node(root, value);
+    value.attach(root->id);
+    root.id.addToMembersCount();
     return m_nodeHash.insert(value.getId(), node);
 }
 
