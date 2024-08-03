@@ -18,6 +18,9 @@ public:
 
     output_t<Node*> add(const T& value);
     output_t<T> first() const;
+    Node* firstNode() const{
+        return m_head;
+    }
     StatusType remove(Node* node);
     void printList() const;
     int size() const {
