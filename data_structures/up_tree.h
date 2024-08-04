@@ -92,6 +92,8 @@ inline StatusType UpTree<T, S>::union2Sets(int set1Id, int set2Id)
     Set* set1 = search1.ans();
     Set* set2 = search2.ans();
 
+    if (set1->isEmpty() || set2->isEmpty()) return StatusType::FAILURE;
+
     Set* superSet;
     Set* subSet;
 

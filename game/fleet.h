@@ -36,6 +36,10 @@ class Fleet {
         return m_size;
     }
 
+    bool isEmpty() const {
+        return m_size == 0;
+    }
+
     int getShipCount() const {
         return m_ships;
     }
