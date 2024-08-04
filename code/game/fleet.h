@@ -14,6 +14,9 @@ class Fleet {
         } else {
             m_rankOffset -= size();
         }
+        m_rankOffset -= other.rankOffset();
+
+        return StatusType::SUCCESS;
     }
 
     StatusType addIn(Fleet other, Fleet defaultFleet) {
@@ -29,6 +32,8 @@ class Fleet {
         }
         m_ships += other.getShipCount();
         m_size += other.size();
+
+        return StatusType::SUCCESS;
     }
 
     int getId() const {
