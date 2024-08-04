@@ -1,7 +1,7 @@
 #ifndef ARRAY_H_
 #define ARRAY_H_
 
-#include "../wet2util.h"
+#include "wet2util.h"
 
 template<typename T>
 class Array {

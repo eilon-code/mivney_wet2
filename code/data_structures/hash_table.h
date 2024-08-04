@@ -1,13 +1,13 @@
 #ifndef HASH_TABLE_H_
 #define HASH_TABLE_H_
 
-#include "../wet2util.h"
+#include "wet2util.h"
 #include "linked_list.h"
 
 template<typename T>
 class HashTable {
     public:
-    HashTable():m_table(new List<T>[10]),m_size(0),m_buckets(10) {};
+    HashTable():m_table(new List<T*>[10]),m_size(0),m_buckets(10) {};
     ~HashTable();
 
     StatusType insert(int key, const T& value);
@@ -15,7 +15,7 @@ class HashTable {
     void print() const;
 
     private:
-    List<T>* m_table;
+    List<T*>* m_table;
     int m_size;
     int m_buckets;
     void resize();
@@ -25,16 +25,23 @@ class HashTable {
 
 template<typename T>
 HashTable<T>::~HashTable(){
+    for (int i=0; i<m_buckets; ++i) {
+        typename List<T*>::Node* current = m_table[i].firstNode();
+        while(current != nullptr){
+            delete current->data;
+            current=current->next;
+        }
+    }
     delete[] m_table;
 }
 
 template<typename T>
 output_t<T*> HashTable<T>::get(int key) const{
     int index = hash(key);
-    typename List<T>::Node *current = m_table[index].firstNode();
+    typename List<T*>::Node *current = m_table[index].firstNode();
     while(current != nullptr){
-        if(current->data.getId() == key){
-            return &current->data;
+        if(current->data->getId() == key){
+            return current->data;
         }
         current=current->next;
     }
@@ -49,8 +56,15 @@ StatusType HashTable<T>::insert(int key, const T& value){
     if(m_size == m_buckets){
         resize();
     }
+    T* pointer;
+    try {
+        pointer = new T(value);
+    } catch(...) {
+        return StatusType::ALLOCATION_ERROR;
+    }
+    
     int index = hash(key);
-    m_table[index].add(value);
+    m_table[index].add(pointer);
     m_size++;
     return StatusType::SUCCESS;
 }
@@ -59,11 +73,11 @@ template <typename T>
 void HashTable<T>::resize(){
     int old_buckets = m_buckets;
     m_buckets *= 2;
-    List<T>* newTable = new List<T>[m_buckets];
+    List<T*>* newTable = new List<T*>[m_buckets];
     for(int i=0; i<old_buckets; i++){
-        typename List<T>::Node *current = m_table[i].firstNode();
+        typename List<T*>::Node *current = m_table[i].firstNode();
         while(current != nullptr){
-            int newIndex = hash(current->data);
+            int newIndex = hash(*(current->data));
             newTable[newIndex].add(current->data);
             current = current->next;
         }
@@ -84,10 +98,10 @@ int HashTable<T>::hash(int key)const{
 template <typename T>
 void HashTable<T>::print()const{
     for(int i=0;i<m_buckets;i++){
-        typename List<T>::Node *current = m_table[i].firstNode();
+        typename List<T*>::Node *current = m_table[i].firstNode();
         std::cout << "[]-> ";
         while(current != nullptr){
-            std::cout << current->data << " -> ";
+            std::cout << *(current->data) << " -> ";
             current = current->next;
         }
         std::cout << std::endl;

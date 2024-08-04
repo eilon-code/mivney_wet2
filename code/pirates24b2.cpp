@@ -2,15 +2,9 @@
 
 int getPirateRank(Pirate* pirate, UpTree<Pirate, Fleet>::Set* set);
 
-oceans_t::oceans_t()
-{
-	// TODO: Your code goes here
-}
+oceans_t::oceans_t()=default;
 
-oceans_t::~oceans_t()
-{
-	// TODO: Your code goes here
-}
+oceans_t::~oceans_t()=default;
 
 
 StatusType oceans_t::add_fleet(int fleetId)
@@ -72,19 +66,18 @@ StatusType oceans_t::pirate_argument(int pirateId1, int pirateId2)
 	if (searchPirate2.status() != StatusType::SUCCESS) return searchPirate2.status();
 	Pirate* pirate2 = searchPirate2.ans();
 
-	output_t<UpTree<Pirate, Fleet>::Set*> search1 = m_unionFind.fetchSetOf(pirate1->getId());
+	output_t<UpTree<Pirate, Fleet>::Set*> search1 = m_unionFind.fetchSetOf(pirateId1);
 	if (search1.status() != StatusType::SUCCESS) return search1.status();
 	UpTree<Pirate, Fleet>::Set* set1 = search1.ans();
 
-	output_t<UpTree<Pirate, Fleet>::Set*> search2 = m_unionFind.fetchSetOf(pirate2->getId());
+	output_t<UpTree<Pirate, Fleet>::Set*> search2 = m_unionFind.fetchSetOf(pirateId2);
 	if (search2.status() != StatusType::SUCCESS) return search2.status();
 	UpTree<Pirate, Fleet>::Set* set2 = search2.ans();
 
     int rank1 = getPirateRank(pirate1, set1);
 	int rank2 = getPirateRank(pirate2, set2);
-
-	bool sameFleet = (set1 == set2) || (set1->superSet == set2->superSet) ||
-						(set1 = set2->superSet) || (set1->superSet == set2);
+	
+	bool sameFleet = (set1 == set2) || (set1->superSet == set2->superSet) || (set1 == set2->superSet) || (set1->superSet == set2);
 	if (!sameFleet) return StatusType::FAILURE;
 	
 	pirate1->changeCoins(rank1 - rank2);
@@ -102,9 +95,10 @@ int getPirateRank(Pirate* pirate, UpTree<Pirate, Fleet>::Set* set) {
 	int result = pirate->getRank() + totalRankOffset;
 
 	while (subSet->superSet && subSet->superSet != set) { // cutting down the tree
+        totalRankOffset -= subSet->id.rankOffset();
+
         UpTree<Pirate, Fleet>::Set* temp = subSet->superSet;
         subSet->superSet = set;
-        totalRankOffset -= subSet->id.rankOffset();
         subSet->id.offsetRank(totalRankOffset);
         subSet = temp;
     }

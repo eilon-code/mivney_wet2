@@ -2,7 +2,6 @@
 #define UP_TREE_H_
 
 #include "wet2util.h"
-#include "dynamic_array.h"
 #include "hash_table.h"
 
 template<typename T, typename S>
@@ -11,6 +10,7 @@ class UpTree {
     class Set {
         public:
         Set(const S& setId) : superSet(nullptr), id(setId) {}
+        ~Set()=default;
         StatusType joinIn(Set* root, Set* defaultSet) {
             if (superSet!=nullptr) return StatusType::FAILURE;
             StatusType result = id.joinIn(root->id, defaultSet->id);
@@ -40,11 +40,12 @@ class UpTree {
         Set* root;
         T value;
         Node(Set* root, const T& val) : root(root), value(val) {}
+        ~Node()=default;
         int getId() const {
             return value.getId();
         }
     };
-    UpTree(){}
+    UpTree() = default;
     ~UpTree() = default;
 
     StatusType makeSet(const S& setId);
@@ -127,10 +128,11 @@ inline output_t<typename UpTree<T, S>::Set*> UpTree<T, S>::findSet(int setId)
     Set* subSet = search.ans();// from now on, the hight optimization for all Sets in the way up
     while (subSet->superSet && subSet->superSet != root) {
         Set* temp = subSet->superSet;
-        subSet->superSet = root;
 
         totalRankOffset -= subSet->id.rankOffset();
         subSet->id.offsetRank(totalRankOffset);
+        subSet->superSet = root;
+        
         subSet = temp;
     }
 
