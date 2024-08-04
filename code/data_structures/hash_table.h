@@ -56,7 +56,7 @@ StatusType HashTable<T>::insert(int key, const T& value){
         }
     }
     int index = hash(key);
-    output_t result = m_table[index].add(value);
+    auto result = m_table[index].add(value);
     if(result.status() == StatusType::SUCCESS){
         m_size++;
         return StatusType::SUCCESS;
