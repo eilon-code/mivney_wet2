@@ -56,14 +56,8 @@ class UpTree {
 template <typename T, typename S>
 inline StatusType UpTree<T, S>::makeSet(const S& SetId)
 {
-    try {
-        Set newSet(SetId);
-        return m_setHash.insert(SetId.getId(), newSet);
-    } catch(...) {
-        return StatusType::ALLOCATION_ERROR
-    }
-    
-    return StatusType::SUCCESS;
+    Set newSet(SetId);
+    return m_setHash.insert(SetId.getId(), newSet);
 }
 
 template <typename T, typename S>
@@ -115,7 +109,8 @@ inline output_t<typename UpTree<T, S>::Set*> UpTree<T, S>::findSet(int setId)
         return search.status();
     }
 
-    Set* root = search.ans();
+    Set* searchResult = search.ans();
+    Set* root = searchResult;
     int totalRankOffset = root->id.rankOffset();
     while (!root->isRoot()) {
         root = root->superSet;
@@ -131,7 +126,7 @@ inline output_t<typename UpTree<T, S>::Set*> UpTree<T, S>::findSet(int setId)
         subSet = temp;
     }
 
-    if (root->id != setId) return StatusType::FAILURE;
+    if (root->id != searchResult->id) return StatusType::FAILURE;
     return root;
 }
 
@@ -139,9 +134,7 @@ template <typename T, typename S>
 inline output_t<typename UpTree<T, S>::Set*> UpTree<T, S>::fetchSetOf(int valueId)
 {
     output_t<Node*> search = m_nodeHash.get(valueId);
-    if (search.status() != StatusType::SUCCESS) {
-        return search.status();
-    }
+    if (search.status() != StatusType::SUCCESS) return search.status();
     Node* node = search.ans();
     return node->root;
 }
@@ -150,9 +143,7 @@ template <typename T, typename S>
 inline output_t<T*> UpTree<T, S>::fetch(int valueId)
 {
     output_t<Node*> search = m_nodeHash.get(valueId);
-    if (search.status() != StatusType::SUCCESS) {
-        return search.status();
-    }
+    if (search.status() != StatusType::SUCCESS) return search.status();
     Node* node = search.ans();
     return &(node->value);
 }
