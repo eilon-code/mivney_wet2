@@ -9,7 +9,7 @@ class Pirate {
     ~Pirate() = default;
 
     void attach(Fleet fleet) {
-        m_rank = fleet.size()+1;
+        m_rank = fleet.size()+1 - fleet.rankOffset();
     }
 
     void changeCoins(int change) {
