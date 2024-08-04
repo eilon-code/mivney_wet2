@@ -41,7 +41,7 @@ output_t<int> oceans_t::num_ships_for_fleet(int fleetId)
 	output_t<UpTree<Pirate, Fleet>::Set*> search = m_unionFind.findSet(fleetId);
 	if (search.status() != StatusType::SUCCESS) return search.status();
 	UpTree<Pirate, Fleet>::Set* set = search.ans();
-    return set->id.ships();
+    return set->id.getShipCount();
 }
 
 output_t<int> oceans_t::get_pirate_money(int pirateId)
@@ -56,7 +56,7 @@ output_t<int> oceans_t::get_pirate_money(int pirateId)
 StatusType oceans_t::unite_fleets(int fleetId1, int fleetId2)
 {
 	if (fleetId1 <= 0 || fleetId2 <= 0 || fleetId1 == fleetId2) return StatusType::INVALID_INPUT;
-	return m_unionFind.union2Set(fleetId1, fleetId2);
+	return m_unionFind.union2Sets(fleetId1, fleetId2);
 }
 
 StatusType oceans_t::pirate_argument(int pirateId1, int pirateId2)
@@ -70,15 +70,14 @@ StatusType oceans_t::pirate_argument(int pirateId1, int pirateId2)
 	if (searchPirate2.status() != StatusType::SUCCESS) return searchPirate2.status();
 	Pirate* pirate2 = searchPirate2.ans();
 
-	output_t<UpTree<Pirate, Fleet>::Set*> search1 = m_unionFind.findSetOf(pirate1->getId());
+	output_t<UpTree<Pirate, Fleet>::Set*> search1 = m_unionFind.fetchSetOf(pirate1->getId());
 	if (search1.status() != StatusType::SUCCESS) return search1.status();
 	UpTree<Pirate, Fleet>::Set* set1 = search1.ans();
 
-	output_t<UpTree<Pirate, Fleet>::Set*> search2 = m_unionFind.findSetOf(pirate2->getId());
+	output_t<UpTree<Pirate, Fleet>::Set*> search2 = m_unionFind.fetchSetOf(pirate2->getId());
 	if (search2.status() != StatusType::SUCCESS) return search2.status();
 	UpTree<Pirate, Fleet>::Set* set2 = search2.ans();
 
-	if (set1 != set2) return StatusType::FAILURE;
 
     int rank1 = getPirateRank(pirate1, set1);
 	int rank2 = getPirateRank(pirate2, set2);
@@ -88,10 +87,21 @@ StatusType oceans_t::pirate_argument(int pirateId1, int pirateId2)
 }
 
 int getPirateRank(Pirate* pirate, UpTree<Pirate, Fleet>::Set* set) {
-	int result = pirate->getRank();
+	UpTree<Pirate, Fleet>::Set* subSet = set;
+	int totalRankOffset = set->id.rankOffset();
 	while (!set->isRoot()) {
-		result += set->id.rankOffset();
 		set = set->superSet;
+		totalRankOffset += set->id.rankOffset();
 	}
+	int result = pirate->getRank() + totalRankOffset;
+
+	while (subSet->superSet && subSet->superSet != set) { // cutting down the tree
+        UpTree<Pirate, Fleet>::Set* temp = subSet->superSet;
+        subSet->superSet = set;
+        totalRankOffset -= subSet->id.rankOffset();
+        subSet->id.offsetRank(totalRankOffset);
+        subSet = temp;
+    }
+	
 	return result;
 }

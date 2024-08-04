@@ -44,12 +44,20 @@ class Fleet {
         return m_rankOffset;
     }
 
+    void offsetRank(int change) {
+        m_rankOffset += change;
+    }
+
     void addToMembersCount() {
         ++m_size;
     }
 
     bool operator<(const Fleet& other) {
         return getShipCount() < other.getShipCount();
+    }
+
+    bool operator!=(const Fleet& other) {
+        return getId() != other.getId();
     }
 
     private:

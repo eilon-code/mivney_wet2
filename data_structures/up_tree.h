@@ -43,7 +43,7 @@ class UpTree {
     StatusType insertValue(int setId, const T& value);
     StatusType union2Sets(int set1Id, int set2Id);
     output_t<Set*> findSet(int setId);
-    output_t<Set*> findSetOf(int valueId);
+    output_t<Set*> fetchSetOf(int valueId);
     output_t<T*> fetch(int valueId);
 
     private:
@@ -70,9 +70,7 @@ template <typename T, typename S>
 inline StatusType UpTree<T, S>::insertValue(int setId, const T &value)
 {
     output_t<Set*> search = findSet(setId);
-    if (search.status() != StatusType::SUCCESS) {
-        return search.status();
-    }
+    if (search.status() != StatusType::SUCCESS) return search.status();
     Set* root = search.ans();
 
     Node node(root, value);
@@ -114,28 +112,36 @@ inline output_t<typename UpTree<T, S>::Set*> UpTree<T, S>::findSet(int setId)
     if (search.status() != StatusType::SUCCESS) {
         return search.status();
     }
-    return search.ans();
+
+    Set* root = search.ans();
+    int totalRankOffset = root->id.rankOffset();
+    while (!root->isRoot()) {
+        root = root->superSet;
+        totalRankOffset += root->id.rankOffset();
+    }
+    Set* subSet = search.ans();// from now on, the hight optimization for all Sets in the way up
+    while (subSet->superSet && subSet->superSet != root) {
+        Set* temp = subSet->superSet;
+        subSet->superSet = root;
+
+        totalRankOffset -= subSet->id.rankOffset();
+        subSet->id.offsetRank(totalRankOffset);
+        subSet = temp;
+    }
+
+    if (root->id != setId) return StatusType::FAILURE;
+    return root;
 }
 
 template <typename T, typename S>
-inline output_t<typename UpTree<T, S>::Set*> UpTree<T, S>::findSetOf(int valueId)
+inline output_t<typename UpTree<T, S>::Set*> UpTree<T, S>::fetchSetOf(int valueId)
 {
     output_t<Node*> search = m_nodeHash.get(valueId);
     if (search.status() != StatusType::SUCCESS) {
         return search.status();
     }
     Node* node = search.ans();
-    Set* root = node->root;
-    while (!root->isRoot()) {
-        root = root->superSet;
-    }
-    Set* subSet = node->root;// from now on, the hight optimization for all Sets in the way up
-    while (subSet->superSet != root) {
-        Set* temp = subSet->superSet;
-        subSet->superSet = root;
-        subSet = temp;
-    }
-    return root;
+    return node->root;
 }
 
 template <typename T, typename S>
