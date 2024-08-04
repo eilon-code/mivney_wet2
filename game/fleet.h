@@ -8,8 +8,8 @@ class Fleet {
     Fleet(int id) : m_id(id), m_ships(1), m_size(0), m_rankOffset(0), m_overrideId(id) {}
     ~Fleet(){}
 
-    StatusType joinIn(Fleet other) {
-        if (size() < other.size()) {
+    StatusType joinIn(Fleet other, Fleet defaultFleet) {
+        if (size() < other.size() || (size() == other.size() && defaultFleet != *this)) {
             m_rankOffset += other.size();
         } else {
             m_rankOffset -= size();
@@ -22,6 +22,9 @@ class Fleet {
             m_overrideId = other.getId(); // override id
         }
         else if (size() == other.size()) {
+            if (defaultFleet != *this) {
+                m_rankOffset += other.size();
+            }
             m_overrideId = defaultFleet.getId(); // override id
         }
         m_ships += other.getShipCount();

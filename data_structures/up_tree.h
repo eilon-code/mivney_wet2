@@ -12,7 +12,7 @@ class UpTree {
         Set(const S& setId) : superSet(nullptr), id(setId) {}
         StatusType joinIn(Set* root, Set* defaultSet) {
             if (superSet!=nullptr) return StatusType::FAILURE;
-            StatusType result = id.joinIn(root->id);
+            StatusType result = id.joinIn(root->id, defaultSet->id);
             if (result != StatusType::SUCCESS) {
                 return result;
             }
