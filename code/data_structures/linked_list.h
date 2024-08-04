@@ -1,7 +1,7 @@
 #ifndef DOUBLE_LINKED_LIST_H
 #define DOUBLE_LINKED_LIST_H
 
-#include "wet2util.h"
+#include "../wet2util.h"
 #include <iostream>
 
 template <typename T>

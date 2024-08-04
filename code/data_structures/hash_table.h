@@ -1,7 +1,7 @@
 #ifndef HASH_TABLE_H_
 #define HASH_TABLE_H_
 
-#include "wet2util.h"
+#include "../wet2util.h"
 #include "linked_list.h"
 
 template<typename T>

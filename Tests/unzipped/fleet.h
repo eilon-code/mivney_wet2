@@ -14,6 +14,7 @@ class Fleet {
         } else {
             m_rankOffset -= size();
         }
+        m_rankOffset -= other.rankOffset();
 
         return StatusType::SUCCESS;
     }
