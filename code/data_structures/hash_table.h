@@ -70,7 +70,7 @@ StatusType HashTable<T>::insert(int key, const T& value){
     }
     
     int index = hash(key);
-    m_table[index].add(value);
+    m_table[index].add(pointer);
     m_size++;
     return StatusType::SUCCESS;
 }
