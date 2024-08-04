@@ -19,13 +19,13 @@ class Fleet {
     StatusType addIn(Fleet other, Fleet defaultFleet) {
         if (size() < other.size()) {
             m_rankOffset += other.size();
-            m_overrideId = other.getId(); // override id
+            m_overrideId = other.getOverrideId(); // override id
         }
         else if (size() == other.size()) {
             if (defaultFleet != *this) {
                 m_rankOffset += other.size();
             }
-            m_overrideId = defaultFleet.getId(); // override id
+            m_overrideId = defaultFleet.getOverrideId(); // override id
         }
         m_ships += other.getShipCount();
         m_size += other.size();
