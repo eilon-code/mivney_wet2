@@ -10,20 +10,19 @@ class UpTree {
     public:
     class Set {
         Set(const S& setId) : superSet(nullptr), id(setId) {}
-        StatusType joinIn(Set* root) {
-            if (superSet!=nullptr) return StatusType::FAILURE
+        StatusType joinIn(Set* root, Set* defaultSet) {
+            if (superSet!=nullptr) return StatusType::FAILURE;
             StatusType result = id.joinIn(root->id);
             if (result != StatusType::SUCCESS) {
                 return result;
             }
-            result = root->id.addIn(id);
+            result = root->id.addIn(id, defaultSet->id);
             if (result != StatusType::SUCCESS) {
                 return result;
             }
             superSet = root;
             return result;
         }
-
         public:
         bool isRoot() const {
             return superSet == nullptr;
@@ -42,7 +41,7 @@ class UpTree {
 
     StatusType makeSet(const S& setId);
     StatusType insertValue(int setId, const T& value);
-    StatusType union2Set(int set1Id, int set2Id);
+    StatusType union2Sets(int set1Id, int set2Id);
     output_t<Set*> findSet(int setId);
     output_t<Set*> findSetOf(int valueId);
     output_t<T*> fetch(int valueId);
@@ -86,7 +85,7 @@ inline StatusType UpTree<T, S>::insertValue(int setId, const T &value)
 }
 
 template <typename T, typename S>
-inline StatusType UpTree<T, S>::union2Set(int set1Id, int set2Id)
+inline StatusType UpTree<T, S>::union2Sets(int set1Id, int set2Id)
 {
     output_t<Set*> search1 = findSet(set1Id);
     output_t<Set*> search2 = findSet(set2Id);
@@ -105,7 +104,7 @@ inline StatusType UpTree<T, S>::union2Set(int set1Id, int set2Id)
         superSet = set1;
         subSet = set2;
     }
-    return subSet->joinIn(superSet);;
+    return subSet->joinIn(superSet, set1);
 }
 
 template <typename T, typename S>
@@ -115,9 +114,7 @@ inline output_t<typename UpTree<T, S>::Set*> UpTree<T, S>::findSet(int setId)
     if (search.status() != StatusType::SUCCESS) {
         return search.status();
     }
-    Set* set = search.ans();
-    if (!set->isRoot()) return StatusType::FAILURE;
-    return set;
+    return search.ans();
 }
 
 template <typename T, typename S>

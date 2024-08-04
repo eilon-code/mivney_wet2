@@ -9,11 +9,22 @@ class Fleet {
     ~Fleet(){}
 
     StatusType joinIn(Fleet other) {
-        m_rankOffset = other.size();
+        if (size() < other.size()) {
+            m_rankOffset += other.size();
+        } else {
+            m_rankOffset -= size();
+        }
     }
 
-    StatusType addIn(Fleet other) {
-        m_ships += other.ships();
+    StatusType addIn(Fleet other, Fleet defaultFleet) {
+        if (size() < other.size()) {
+            m_rankOffset += other.size();
+            m_id = other.getId(); // override id
+        }
+        else if (size() == other.size()) {
+            m_id = defaultFleet.getId(); // override id
+        }
+        m_ships += other.getShipCount();
         m_size += other.size();
     }
 
@@ -25,7 +36,7 @@ class Fleet {
         return m_size;
     }
 
-    int ships() const {
+    int getShipCount() const {
         return m_ships;
     }
 
@@ -38,7 +49,7 @@ class Fleet {
     }
 
     bool operator<(const Fleet& other) {
-        return size() < other.size();
+        return getShipCount() < other.getShipCount();
     }
 
     private:
