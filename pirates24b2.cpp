@@ -78,9 +78,12 @@ StatusType oceans_t::pirate_argument(int pirateId1, int pirateId2)
 	if (search2.status() != StatusType::SUCCESS) return search2.status();
 	UpTree<Pirate, Fleet>::Set* set2 = search2.ans();
 
-
     int rank1 = getPirateRank(pirate1, set1);
 	int rank2 = getPirateRank(pirate2, set2);
+
+	bool sameFleet = (set1 == set2) || (set1->superSet == set2->superSet) ||
+						(set1 = set2->superSet) || (set1->superSet == set2);
+	if (!sameFleet) return StatusType::FAILURE;
 	
 	pirate1->changeCoins(rank1 - rank2);
 	pirate2->changeCoins(rank2 - rank1);
