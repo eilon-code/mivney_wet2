@@ -37,6 +37,7 @@ HashTable<T>::~HashTable(){
 
 template<typename T>
 output_t<T*> HashTable<T>::get(int key) const{
+    if(key <= 0)return StatusType::FAILURE;
     int index = hash(key);
     typename List<T*>::Node *current = m_table[index].firstNode();
     while(current != nullptr){
@@ -50,11 +51,16 @@ output_t<T*> HashTable<T>::get(int key) const{
 
 template<typename T>
 StatusType HashTable<T>::insert(int key, const T& value){
+    if(key <= 0)return StatusType::FAILURE;
     if(get(key).status()==StatusType::SUCCESS){
         return StatusType::FAILURE;
     }
     if(m_size == m_buckets){
-        resize();
+        try{
+            resize();
+        } catch(...){
+            return StatusType::ALLOCATION_ERROR;
+        }
     }
     T* pointer;
     try {

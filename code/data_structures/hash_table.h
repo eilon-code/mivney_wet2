@@ -1,7 +1,7 @@
 #ifndef HASH_TABLE_H_
 #define HASH_TABLE_H_
 
-#include "wet2util.h"
+#include "../../wet2util.h"
 #include "linked_list.h"
 
 template<typename T>
@@ -10,7 +10,7 @@ class HashTable {
     HashTable():m_table(new List<T*>[10]),m_size(0),m_buckets(10) {};
     ~HashTable();
 
-    StatusType insert(int key, const T& value);
+    output_t<T*> insert(int key, const T& value);
     output_t<T*> get(int key) const;
     void print() const;
 
@@ -50,7 +50,7 @@ output_t<T*> HashTable<T>::get(int key) const{
 }
 
 template<typename T>
-StatusType HashTable<T>::insert(int key, const T& value){
+output_t<T*> HashTable<T>::insert(int key, const T& value){
     if(key <= 0)return StatusType::FAILURE;
     if(get(key).status()==StatusType::SUCCESS){
         return StatusType::FAILURE;
@@ -72,7 +72,7 @@ StatusType HashTable<T>::insert(int key, const T& value){
     int index = hash(key);
     m_table[index].add(pointer);
     m_size++;
-    return StatusType::SUCCESS;
+    return pointer;
 }
 
 template <typename T>

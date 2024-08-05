@@ -80,8 +80,8 @@ StatusType oceans_t::pirate_argument(int pirateId1, int pirateId2)
 	bool sameFleet = (set1 == set2) || (set1->superSet == set2->superSet) || (set1 == set2->superSet) || (set1->superSet == set2);
 	if (!sameFleet) return StatusType::FAILURE;
 	
-	pirate1->changeCoins(rank1 - rank2);
-	pirate2->changeCoins(rank2 - rank1);
+	pirate1->changeCoins(rank2 - rank1);
+	pirate2->changeCoins(rank1 - rank2);
 	return StatusType::SUCCESS;
 }
 

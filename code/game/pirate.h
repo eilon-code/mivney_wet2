@@ -8,7 +8,7 @@ class Pirate {
     Pirate(int id) :  m_id(id), m_coins(0), m_rank(-1) {}
     ~Pirate() = default;
 
-    void attach(Fleet fleet) {
+    void attach(const Fleet& fleet) {
         m_rank = fleet.size()+1 - fleet.rankOffset();
     }
 
