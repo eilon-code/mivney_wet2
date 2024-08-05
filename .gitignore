@@ -1,5 +1,5 @@
-./build
-
+./bulid/
+./build/*
 # Prerequisites
 *.d
 
