@@ -25,7 +25,7 @@ EXEC = prog
 # Flags
 DEBUG_FLAG = # Leave empty, assign -g for debug
 COMP_FLAG = -std=c++11 -Wall -Werror
-INCLUDE_FLAGS = -I$(DIR)
+INCLUDE_FLAGS = -I$(DIR) -I$(GAME_DIR) -I$(DATA_DIR) -I./
 
 # Default target
 $(EXEC): $(OBJS)
