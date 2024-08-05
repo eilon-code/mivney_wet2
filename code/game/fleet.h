@@ -11,7 +11,7 @@ class Fleet {
     StatusType joinIn(Fleet* other, const Fleet& defaultFleet) {
         // std::cout << "low: " << size() << ", up: " << other->size() << std::endl;
         bool defaultChoice = size() == other->size();
-        bool defaultIsUp = m_id != defaultFleet.getId();
+        bool defaultIsUp = other->getId() == defaultFleet.getId();
         bool correctOrder = size() < other->size() || (defaultChoice && defaultIsUp);
         if (correctOrder) {
             m_rankOffset += other->size();
