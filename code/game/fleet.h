@@ -1,7 +1,7 @@
 #ifndef FLEET_H_
 #define FLEET_H_
 
-#include "../../wet2util.h"
+#include "wet2util.h"
 
 class Fleet {
     public:
@@ -9,7 +9,7 @@ class Fleet {
     ~Fleet(){}
 
     StatusType joinIn(Fleet* other, const Fleet& defaultFleet) {
-        std::cout << "low: " << size() << ", up: " << other->size() << std::endl;
+        // std::cout << "low: " << size() << ", up: " << other->size() << std::endl;
         bool defaultChoice = size() == other->size();
         bool defaultIsUp = m_id != defaultFleet.getId();
         bool correctOrder = size() < other->size() || (defaultChoice && defaultIsUp);
@@ -19,7 +19,7 @@ class Fleet {
             m_rankOffset -= size();
         }
         m_rankOffset -= other->rankOffset();
-        std::cout << "lowR: " << rankOffset() << ", upR: " << other->rankOffset() << std::endl;
+        // std::cout << "lowR: " << rankOffset() << ", upR: " << other->rankOffset() << std::endl;
         StatusType result = other->addIn(*this, correctOrder);
 
         return result;

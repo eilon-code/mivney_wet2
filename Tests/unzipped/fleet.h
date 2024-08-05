@@ -8,27 +8,27 @@ class Fleet {
     Fleet(int id) : m_id(id), m_ships(1), m_size(0), m_rankOffset(0), m_overrideId(id) {}
     ~Fleet(){}
 
-    StatusType joinIn(Fleet other, Fleet defaultFleet) {
-        if (size() < other.size() || (size() == other.size() && defaultFleet != *this)) {
-            m_rankOffset += other.size();
+    StatusType joinIn(Fleet* other, const Fleet& defaultFleet) {
+        // std::cout << "low: " << size() << ", up: " << other->size() << std::endl;
+        bool defaultChoice = size() == other->size();
+        bool defaultIsUp = m_id != defaultFleet.getId();
+        bool correctOrder = size() < other->size() || (defaultChoice && defaultIsUp);
+        if (correctOrder) {
+            m_rankOffset += other->size();
         } else {
             m_rankOffset -= size();
         }
-        m_rankOffset -= other.rankOffset();
+        m_rankOffset -= other->rankOffset();
+        // std::cout << "lowR: " << rankOffset() << ", upR: " << other->rankOffset() << std::endl;
+        StatusType result = other->addIn(*this, correctOrder);
 
-        return StatusType::SUCCESS;
+        return result;
     }
 
-    StatusType addIn(Fleet other, Fleet defaultFleet) {
-        if (size() < other.size()) {
+    StatusType addIn(const Fleet& other, bool correctOrder) {
+        if (!correctOrder) {
             m_rankOffset += other.size();
             m_overrideId = other.getOverrideId(); // override id
-        }
-        else if (size() == other.size()) {
-            if (defaultFleet != *this) {
-                m_rankOffset += other.size();
-            }
-            m_overrideId = defaultFleet.getOverrideId(); // override id
         }
         m_ships += other.getShipCount();
         m_size += other.size();
@@ -69,7 +69,11 @@ class Fleet {
     }
 
     bool operator!=(const Fleet& other) {
-        return getId() != other.getOverrideId() && getOverrideId() != other.getId();
+        return !(*this == other);
+    }
+
+    bool operator==(const Fleet& other) {
+        return getId() == other.getOverrideId() || getOverrideId() == other.getId();
     }
 
     int getOverrideId() const {

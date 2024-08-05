@@ -1,7 +1,7 @@
 #ifndef UP_TREE_H_
 #define UP_TREE_H_
 
-#include "../../wet2util.h"
+#include "wet2util.h"
 #include "hash_table.h"
 
 template<typename T, typename S>

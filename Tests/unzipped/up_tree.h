@@ -13,14 +13,9 @@ class UpTree {
         ~Set()=default;
         StatusType joinIn(Set* root, Set* defaultSet) {
             if (superSet!=nullptr) return StatusType::FAILURE;
-            StatusType result = id.joinIn(root->id, defaultSet->id);
-            if (result != StatusType::SUCCESS) {
-                return result;
-            }
-            result = root->id.addIn(id, defaultSet->id);
-            if (result != StatusType::SUCCESS) {
-                return result;
-            }
+            StatusType result = id.joinIn(&(root->id), defaultSet->id);
+            if (result != StatusType::SUCCESS) return result;
+
             superSet = root;
             return result;
         }
@@ -66,7 +61,7 @@ template <typename T, typename S>
 inline StatusType UpTree<T, S>::makeSet(const S& SetId)
 {
     Set newSet(SetId);
-    return m_setHash.insert(SetId.getId(), newSet);
+    return m_setHash.insert(SetId.getId(), newSet).status();
 }
 
 template <typename T, typename S>
@@ -77,12 +72,12 @@ inline StatusType UpTree<T, S>::insertValue(int setId, const T &value)
     Set* root = search.ans();
 
     Node node(root, value);
-    StatusType result = m_nodeHash.insert(value.getId(), node);
-    if (result != StatusType::SUCCESS) return result;
-
-    node.value.attach(root->id);
+    output_t<Node*> result = m_nodeHash.insert(value.getId(), node);
+    if (result.status() != StatusType::SUCCESS) return result.status();
+    Node* pointer = result.ans();
+    pointer->value.attach(root->id);
     root->id.addToMembersCount();
-    return result;
+    return result.status();
 }
 
 template <typename T, typename S>

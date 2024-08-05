@@ -1,11 +1,10 @@
 #include "pirates24b2.h"
 
-int getPirateRank(Pirate* pirate, UpTree<Pirate, Fleet>::Set* set);
+int getPirateRank(Pirate* pirate, UpTree<Pirate, Fleet>::Set** set);
 
 oceans_t::oceans_t()=default;
 
 oceans_t::~oceans_t()=default;
-
 
 StatusType oceans_t::add_fleet(int fleetId)
 {
@@ -61,12 +60,12 @@ StatusType oceans_t::pirate_argument(int pirateId1, int pirateId2)
 	output_t<Pirate*> searchPirate1 = m_unionFind.fetch(pirateId1);
 	if (searchPirate1.status() != StatusType::SUCCESS) return searchPirate1.status();
 	Pirate* pirate1 = searchPirate1.ans();
-	std::cout<< "pirateId1=" << pirate1->getId() << ", base_rank: "<< pirate1->getRank() << std::endl;
+	// std::cout << "pirateId1=" << pirate1->getId() << ", base_rank: "<< pirate1->getRank() << std::endl;
 
 	output_t<Pirate*> searchPirate2 = m_unionFind.fetch(pirateId2);
 	if (searchPirate2.status() != StatusType::SUCCESS) return searchPirate2.status();
 	Pirate* pirate2 = searchPirate2.ans();
-	std::cout<< "pirateId2=" << pirate2->getId() << ", base_rank: "<< pirate2->getRank() << std::endl;
+	// std::cout << "pirateId2=" << pirate2->getId() << ", base_rank: "<< pirate2->getRank() << std::endl;
 
 	output_t<UpTree<Pirate, Fleet>::Set*> search1 = m_unionFind.fetchSetOf(pirateId1);
 	if (search1.status() != StatusType::SUCCESS) return search1.status();
@@ -76,35 +75,35 @@ StatusType oceans_t::pirate_argument(int pirateId1, int pirateId2)
 	if (search2.status() != StatusType::SUCCESS) return search2.status();
 	UpTree<Pirate, Fleet>::Set* set2 = search2.ans();
 
-    int rank1 = getPirateRank(pirate1, set1);
-	int rank2 = getPirateRank(pirate2, set2);
-	std::cout << "Ranks: " << "pirate" << pirateId1 << ": " << rank1 << ", pirate" << pirateId2 << ": " << rank2 << std::endl;
+    int rank1 = getPirateRank(pirate1, &set1);
+	int rank2 = getPirateRank(pirate2, &set2);
+	// std::cout << "Ranks: " << "pirate" << pirateId1 << ": " << rank1 << ", pirate" << pirateId2 << ": " << rank2 << std::endl;
 	
-	bool sameFleet = (set1 == set2) || (set1->superSet == set2->superSet) || (set1 == set2->superSet) || (set1->superSet == set2);
+	bool sameFleet = (set1 == set2);
 	if (!sameFleet) return StatusType::FAILURE;
 	
-	pirate1->changeCoins(rank2 - rank1);
-	pirate2->changeCoins(rank1 - rank2);
+	pirate1->changeCoins(rank1 - rank2);
+	pirate2->changeCoins(rank2 - rank1);
 	return StatusType::SUCCESS;
 }
 
-int getPirateRank(Pirate* pirate, UpTree<Pirate, Fleet>::Set* set) {
-	UpTree<Pirate, Fleet>::Set* subSet = set;
-	int totalRankOffset = set->id.rankOffset();
-	std::cout << "rankFleet: " << set->id.rankOffset() << std::endl;
-	while (!set->isRoot()) {
-		set = set->superSet;
-		totalRankOffset += set->id.rankOffset();
-		std::cout << "rankFleet: " << set->id.rankOffset() << std::endl;
+int getPirateRank(Pirate* pirate, UpTree<Pirate, Fleet>::Set** set) {
+	UpTree<Pirate, Fleet>::Set* subSet = *set;
+	int totalRankOffset = (*set)->id.rankOffset();
+	// std::cout << "rankFleet: " << set->id.rankOffset() << std::endl;
+	while (!(*set)->isRoot()) {
+		*set = (*set)->superSet;
+		totalRankOffset += (*set)->id.rankOffset();
+		// std::cout << "rankFleet: " << set->id.rankOffset() << std::endl;
 	}
 	int result = pirate->getRank() + totalRankOffset;
-	std::cout << "rankResult: " << result << std::endl;
+	// std::cout << "rankResult: " << result << std::endl;
 
-	while (subSet->superSet && subSet->superSet != set) { // cutting down the tree
+	while (subSet->superSet && subSet->superSet != *set) { // cutting down the tree
         totalRankOffset -= subSet->id.rankOffset();
 
         UpTree<Pirate, Fleet>::Set* temp = subSet->superSet;
-        subSet->superSet = set;
+        subSet->superSet = *set;
         subSet->id.offsetRank(totalRankOffset);
         subSet = temp;
     }

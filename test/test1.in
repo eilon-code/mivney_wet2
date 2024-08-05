@@ -12,6 +12,8 @@ unite_fleets 100 200
 add_fleet 300
 add_pirate 7 300
 
+unite_fleets 100 300
+
 pirate_argument 1 7
 
 get_pirate_money 1
