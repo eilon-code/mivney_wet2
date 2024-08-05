@@ -115,11 +115,12 @@ inline output_t<typename UpTree<T, S>::Set*> UpTree<T, S>::findSet(int setId)
 
     Set* searchResult = search.ans();
     Set* root = searchResult;
-    int totalRankOffset = root->id.rankOffset();
+    int totalRankOffset = 0;
     while (!root->isRoot()) {
-        root = root->superSet;
         totalRankOffset += root->id.rankOffset();
+        root = root->superSet;
     }
+    // totalRankOffset += root->id.rankOffset(); // ignore the root!
     Set* subSet = search.ans();// from now on, the hight optimization for all Sets in the way up
     while (subSet->superSet && subSet->superSet != root) {
         Set* temp = subSet->superSet;
