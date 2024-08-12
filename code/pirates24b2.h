@@ -25,7 +25,6 @@ private:
 	UpTree<Pirate, Fleet> m_unionFind;
 	
 public:
-    output_t<int> get_pirate_rank(int pirateId);
 	// <DO-NOT-MODIFY> {
 
     oceans_t();

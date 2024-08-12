@@ -112,17 +112,3 @@ int getPirateRank(Pirate* pirate, UpTree<Pirate, Fleet>::Set** set) {
 	
 	return result;
 }
-
-output_t<int> oceans_t::get_pirate_rank(int pirateId)
-{
-    if (pirateId <= 0) return StatusType::INVALID_INPUT;
-	output_t<Pirate*> searchPirate = m_unionFind.fetch(pirateId);
-	if (searchPirate.status() != StatusType::SUCCESS) return searchPirate.status();
-	Pirate* pirate = searchPirate.ans();
-
-	output_t<UpTree<Pirate, Fleet>::Set*> search = m_unionFind.fetchSetOf(pirateId);
-	if (search.status() != StatusType::SUCCESS) return search.status();
-	UpTree<Pirate, Fleet>::Set* set = search.ans();
-
-	return getPirateRank(pirate, &set);
-}
