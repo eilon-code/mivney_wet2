@@ -36,6 +36,7 @@ main() {
     done
 
     files_to_zip+=("submissions.txt")
+    files_to_zip+=("Dry.pdf")
 
     # Create the zip file with all found files, without directory structure
     zip -j "$output_zip" "${files_to_zip[@]}"
